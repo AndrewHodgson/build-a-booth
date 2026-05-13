@@ -80,7 +80,7 @@ function PlaceholderGround() {
   return (
     <gridHelper
       args={[12, 12, '#cbd5e1', '#e2e8f0']}
-      position={[0, -.12, 0]}
+      position={[0, -.14, 0]}
     />
   )
 }
