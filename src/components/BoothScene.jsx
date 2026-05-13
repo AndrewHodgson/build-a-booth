@@ -1,6 +1,6 @@
 import { Center, Environment, OrbitControls, useGLTF, useTexture } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
-import { Suspense, useEffect, useMemo } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 import { ClampToEdgeWrapping, RepeatWrapping, SRGBColorSpace } from 'three'
 import { carpetTextureOptions, carpetTexturePreloadPaths } from '../data/carpetOptions.js'
 import {
@@ -16,6 +16,9 @@ const HDRI_PATH = '/hdri/paul_lobe_haus_4k.hdr'
 const SHOW_GRID = true
 const DRAPE_REPEAT = [4, 4]
 const DEFAULT_BARSTOOL_COLOR = 'black'
+const CAMERA_TARGET = [0, 0.7, 0]
+const DESKTOP_CAMERA_POSITION = [1.1, 1.55, 8.2]
+const MOBILE_CAMERA_POSITION = [1.45, 1.82, 10.84]
 
 const barstoolTextureOptions = [
   {
@@ -79,6 +82,24 @@ function SceneLights() {
       <directionalLight position={[5, 8, 5]} intensity={1.2} />
     </>
   )
+}
+
+function useIsMobileViewport() {
+  const [isMobile, setIsMobile] = useState(() =>
+    window.matchMedia('(max-width: 767px)').matches,
+  )
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 767px)')
+    const handleChange = () => setIsMobile(mediaQuery.matches)
+
+    handleChange()
+    mediaQuery.addEventListener('change', handleChange)
+
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
+
+  return isMobile
 }
 
 function PlaceholderGround() {
@@ -253,9 +274,14 @@ function BoothModel({ config }) {
 }
 
 export default function BoothScene({ config }) {
+  const isMobile = useIsMobileViewport()
+
   return (
     <Canvas
-      camera={{ position: [1.1, 1.55, 8.2], fov: 36 }}
+      camera={{
+        position: isMobile ? MOBILE_CAMERA_POSITION : DESKTOP_CAMERA_POSITION,
+        fov: 36,
+      }}
       gl={{ antialias: true, alpha: true }}
       onCreated={({ gl }) => gl.setClearAlpha(0)}
     >
@@ -270,7 +296,7 @@ export default function BoothScene({ config }) {
         enablePan={false}
         minDistance={5.8}
         maxDistance={11}
-        target={[0, 0.7, 0]}
+        target={CAMERA_TARGET}
       />
     </Canvas>
   )

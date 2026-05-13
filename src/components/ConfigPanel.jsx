@@ -411,7 +411,7 @@ export default function ConfigPanel({
       )}
 
       <aside
-        className={`absolute inset-x-0 bottom-0 z-10 max-h-[78vh] overflow-y-auto rounded-t-lg border border-white/70 bg-white/[0.94] p-3 shadow-xl shadow-neutral-900/10 backdrop-blur md:inset-x-auto md:bottom-auto md:right-4 md:top-4 md:block md:max-h-[calc(100vh-2rem)] md:w-80 md:rounded-lg md:p-[17px] ${
+        className={`absolute inset-x-0 bottom-0 z-10 max-h-[78vh] overflow-y-auto rounded-t-lg border border-white/70 bg-white/50 p-3 pb-[calc(env(safe-area-inset-bottom)+50px)] shadow-xl shadow-neutral-900/10 backdrop-blur-md md:inset-x-auto md:bottom-auto md:right-4 md:top-4 md:block md:max-h-[calc(100vh-2rem)] md:w-80 md:rounded-lg md:bg-white/[0.94] md:p-[17px] ${
           isMobileDrawerOpen ? 'block' : 'hidden'
         }`}
       >
