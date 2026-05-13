@@ -401,15 +401,15 @@ export default function ConfigPanel({
   return (
     <>
       {!isMobileDrawerOpen && (
-        <div className="absolute right-4 top-[calc(env(safe-area-inset-top)+1rem)] z-50 flex items-center gap-3 md:hidden">
+        <div className="absolute inset-x-4 top-[calc(env(safe-area-inset-top)+1rem)] z-50 flex items-center justify-between gap-4 md:hidden">
           <img
             src="/images/SourceOne-Logo-RGB.svg"
             alt="SourceOne Events"
-            className="h-9 w-auto drop-shadow-sm"
+            className="h-9 w-auto max-w-[44vw] shrink object-contain drop-shadow-sm"
           />
           <button
             type="button"
-            className="min-h-11 cursor-pointer rounded-md bg-[#214670] px-4 py-3 text-sm font-semibold text-white shadow-lg"
+            className="min-h-11 shrink-0 cursor-pointer rounded-md bg-[#214670] px-4 py-3 text-sm font-semibold text-white shadow-lg"
             onClick={() => setIsMobileDrawerOpen(true)}
           >
             Customize Booth
@@ -422,7 +422,7 @@ export default function ConfigPanel({
           isMobileDrawerOpen ? 'block' : 'hidden'
         }`}
       >
-      <div className="mb-4 flex items-start justify-between gap-3 pl-2 text-left md:pl-0 md:text-center">
+      <div className="mb-5 flex items-start justify-between gap-3 pt-5 text-left md:mb-4 md:pt-0 md:text-center">
         <div className="min-w-0 flex-1">
         <img
           src="/images/SourceOne-Logo-RGB.svg"
