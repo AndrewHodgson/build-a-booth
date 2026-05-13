@@ -1,5 +1,8 @@
 import { useState } from 'react'
-import { carpetTextureOptions } from '../data/carpetOptions.js'
+import {
+  premiumCarpetTextureOptions,
+  standardCarpetTextureOptions,
+} from '../data/carpetOptions.js'
 import { drapeGroups, drapeTextureOptions } from '../data/drapeOptions.js'
 import { skirtTextureOptions } from '../data/skirtOptions.js'
 
@@ -16,23 +19,67 @@ const trashCanOptions = [
   { value: 'hidden', label: 'Hidden' },
 ]
 
-const chairOptions = [
-  { value: '2', label: '2 Chairs' },
-  { value: '1', label: '1 Chair' },
-  { value: '0', label: 'No Chairs' },
+const seatingOptions = [
+  { value: 'none', label: 'No Seating' },
+  {
+    value: 'plastic-side-chair',
+    label: 'Plastic Side Chair Pair',
+    thumbnailPath: '/furniture/plastic_side_chair_thumbnail.jpg',
+  },
+  {
+    value: 'plastic-folding-chair',
+    label: 'Plastic Folding Chair Pair',
+    thumbnailPath: '/furniture/plastic_folding_chair_thumbnail.jpg',
+  },
+  {
+    value: 'padded-side-chair',
+    label: 'Padded Side Chair Pair',
+    thumbnailPath: '/furniture/padded_barstool_thumbnail.jpg',
+  },
+  {
+    value: 'lager-barstool',
+    label: 'Lager Barstool Pair',
+    thumbnailPath: '/furniture/lager_barstool_thumbnail.jpg',
+  },
+  {
+    value: 'ale-barstool',
+    label: 'Ale Barstool Pair',
+    thumbnailPath: '/furniture/ale_barstool_thumbnail.jpg',
+  },
 ]
 
 const tableOptions = [
-  { value: '6ft-30in', label: '6ft 30in Table' },
-  { value: '6ft-42in', label: '6ft 42in Table' },
   { value: 'none', label: 'No Table' },
+  {
+    value: '6ft-30in',
+    label: '6ft 30in Skirted Table',
+    thumbnailPath: '/furniture/6ft_30in_skirted_table_thumbnail.jpg',
+  },
+  {
+    value: '6ft-42in',
+    label: '6ft 42in Skirted Table',
+    thumbnailPath: '/furniture/6ft_42in_skirted_table_thumbnail.jpg',
+  },
 ]
 
-function SegmentedControl({ label, value, options, onChange, rowCount }) {
+const barstoolTextureOptions = [
+  {
+    value: 'black',
+    label: 'Black',
+    color: '#111111',
+  },
+  {
+    value: 'white',
+    label: 'White',
+    color: '#ffffff',
+  },
+]
+
+function SegmentedControl({ label, value, options, onChange, rowCount, columnsClass = '' }) {
   return (
     <div className="grid gap-2">
-      <p className="text-sm font-medium text-neutral-700">{label}</p>
-      <div className="grid gap-2">
+      <p className="text-sm font-bold text-neutral-700">{label}</p>
+      <div className={`grid gap-2 ${columnsClass}`}>
         {Array.from({ length: rowCount ?? options.length }).map((_, index) => {
           const option = options[index]
 
@@ -46,7 +93,7 @@ function SegmentedControl({ label, value, options, onChange, rowCount }) {
             <button
               key={option.value}
               type="button"
-              className={`h-9 rounded-md border px-3 text-sm font-medium transition ${
+              className={`h-9 cursor-pointer rounded-md border px-3 text-sm font-medium transition ${
                 isSelected
                   ? 'border-neutral-950 bg-neutral-950 text-white'
                   : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-400'
@@ -62,12 +109,89 @@ function SegmentedControl({ label, value, options, onChange, rowCount }) {
   )
 }
 
+function FurnitureCards({ label, value, options, onChange }) {
+  return (
+    <div className="grid gap-2">
+      <p className="text-sm font-bold text-neutral-700">{label}</p>
+      <div className="grid grid-cols-3 gap-2">
+        {options.map((option) => {
+          const isSelected = value === option.value
+
+          return (
+            <button
+              key={option.value}
+              type="button"
+              className={`cursor-pointer overflow-hidden rounded-md border text-center transition ${
+                isSelected
+                  ? 'border-neutral-950 bg-neutral-950 text-white ring-2 ring-neutral-950'
+                  : 'border-neutral-200 bg-white text-neutral-800 hover:border-neutral-400'
+              }`}
+              onClick={() => onChange(option.value)}
+            >
+              <span className="flex h-14 items-center justify-center bg-white p-1">
+                {option.thumbnailPath ? (
+                  <img
+                    src={option.thumbnailPath}
+                    alt=""
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <span className="text-xs font-semibold uppercase text-neutral-400">
+                    None
+                  </span>
+                )}
+              </span>
+              <span className="block px-1.5 py-1.5 text-[11px] font-semibold leading-3">
+                {option.label}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function ColorSwatches({ label, value, options, onChange }) {
+  return (
+    <div className="grid gap-2">
+      <p className="text-sm font-medium text-neutral-700">{label}</p>
+      <div className="flex gap-2">
+        {options.map((option) => {
+          const isSelected = value === option.value
+
+          return (
+            <button
+              key={option.value}
+              type="button"
+              title={option.label}
+              aria-label={`${label}: ${option.label}`}
+              className={`h-8 w-8 cursor-pointer rounded-md border shadow-sm transition ${
+                option.value === 'white' ? 'border-neutral-300' : ''
+              } ${
+                isSelected
+                  ? 'ring-2 ring-neutral-950'
+                  : 'border-neutral-300 hover:border-neutral-600'
+              }`}
+              style={{ backgroundColor: option.color }}
+              onClick={() => onChange(option.value)}
+            />
+          )
+        })}
+      </div>
+      <p className="text-xs text-neutral-500">
+        {options.find((option) => option.value === value)?.label}
+      </p>
+    </div>
+  )
+}
+
 function CollapsibleSection({ title, isOpen, onToggle, children }) {
   return (
     <section className="border-t border-neutral-200 pt-3">
       <button
         type="button"
-        className="flex w-full items-center justify-between text-left text-sm font-semibold text-neutral-950"
+        className="flex w-full cursor-pointer items-center justify-between text-left text-sm font-semibold text-[#214670]"
         onClick={onToggle}
         aria-expanded={isOpen}
       >
@@ -75,8 +199,25 @@ function CollapsibleSection({ title, isOpen, onToggle, children }) {
         <span className="text-lg leading-none text-neutral-500">{isOpen ? '-' : '+'}</span>
       </button>
 
-      {isOpen && <div className="mt-3 grid gap-3">{children}</div>}
+      <div
+        className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-200 ease-out ${
+          isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+        }`}
+      >
+        <div className="min-h-0">
+          <div className="mt-3 grid gap-3">{children}</div>
+        </div>
+      </div>
     </section>
+  )
+}
+
+function PanelSubsection({ title, children }) {
+  return (
+    <div className="grid gap-2">
+      <h2 className="text-sm font-bold text-neutral-700">{title}</h2>
+      {children}
+    </div>
   )
 }
 
@@ -111,7 +252,7 @@ function PatternButtons({ value, onChange }) {
             <button
               key={pattern.value}
               type="button"
-              className={`min-h-16 rounded-md border px-3 py-2 text-left transition ${
+              className={`min-h-16 cursor-pointer rounded-md border px-3 py-2 text-left transition ${
                 isSelected
                   ? 'border-neutral-900 bg-neutral-950 text-white'
                   : 'border-neutral-200 bg-white text-neutral-800 hover:border-neutral-400'
@@ -130,10 +271,10 @@ function PatternButtons({ value, onChange }) {
   )
 }
 
-function TextureSwatches({ label, value, options, onChange }) {
+function TextureSwatches({ label, value, options, onChange, showLabel = true }) {
   return (
     <div className="grid gap-2">
-      <p className="text-sm font-medium text-neutral-700">{label}</p>
+      {showLabel && <p className="text-sm font-medium text-neutral-700">{label}</p>}
       <div className="grid grid-cols-8 gap-2">
         {options.map((option) => {
           const isSelected = value === option.value
@@ -144,7 +285,7 @@ function TextureSwatches({ label, value, options, onChange }) {
               type="button"
               title={option.label}
               aria-label={`${label}: ${option.label}`}
-              className={`h-8 rounded-md border bg-cover bg-center shadow-sm transition ${
+              className={`h-8 cursor-pointer rounded-md border bg-cover bg-center shadow-sm transition ${
                 isSelected
                   ? 'border-neutral-950 ring-2 ring-neutral-950'
                   : 'border-neutral-300 hover:border-neutral-600'
@@ -223,7 +364,7 @@ export default function ConfigPanel({
   onFurnitureChange,
 }) {
   const [openSections, setOpenSections] = useState({
-    carpet: true,
+    carpet: false,
     furniture: false,
     left: false,
     back: false,
@@ -232,7 +373,11 @@ export default function ConfigPanel({
 
   function toggleSection(side) {
     setOpenSections((currentSections) => ({
-      ...currentSections,
+      carpet: false,
+      furniture: false,
+      left: false,
+      back: false,
+      right: false,
       [side]: !currentSections[side],
     }))
   }
@@ -250,16 +395,29 @@ export default function ConfigPanel({
 
       <div className="grid gap-3">
         <CollapsibleSection
-          title="Carpet"
+          title="Carpet & Flooring"
           isOpen={openSections.carpet}
           onToggle={() => toggleSection('carpet')}
         >
-          <TextureSwatches
-            label="Carpet"
-            value={config.carpet}
-            options={carpetTextureOptions}
-            onChange={onCarpetChange}
-          />
+          <PanelSubsection title="Standard Carpet">
+            <TextureSwatches
+              label="Standard Carpet"
+              value={config.carpet}
+              options={standardCarpetTextureOptions}
+              showLabel={false}
+              onChange={onCarpetChange}
+            />
+          </PanelSubsection>
+
+          <PanelSubsection title="Premium Carpet & Flooring">
+            <TextureSwatches
+              label="Premium Carpet & Flooring"
+              value={config.carpet}
+              options={premiumCarpetTextureOptions}
+              showLabel={false}
+              onChange={onCarpetChange}
+            />
+          </PanelSubsection>
         </CollapsibleSection>
 
         <CollapsibleSection
@@ -267,24 +425,24 @@ export default function ConfigPanel({
           isOpen={openSections.furniture}
           onToggle={() => toggleSection('furniture')}
         >
-          <div className="grid grid-cols-2 gap-3">
-            <SegmentedControl
-              label="Trash Can"
-              value={config.furniture.trashCan}
-              options={trashCanOptions}
-              rowCount={chairOptions.length}
-              onChange={(value) => onFurnitureChange('trashCan', value)}
-            />
+          <FurnitureCards
+            label="Seating"
+            value={config.furniture.seating}
+            options={seatingOptions}
+            onChange={(value) => onFurnitureChange('seating', value)}
+          />
 
-            <SegmentedControl
-              label="Chairs"
-              value={config.furniture.chairs}
-              options={chairOptions}
-              onChange={(value) => onFurnitureChange('chairs', value)}
+          {(config.furniture.seating === 'lager-barstool' ||
+            config.furniture.seating === 'ale-barstool') && (
+            <ColorSwatches
+              label="Barstool Color"
+              value={config.furniture.barstoolColor}
+              options={barstoolTextureOptions}
+              onChange={(value) => onFurnitureChange('barstoolColor', value)}
             />
-          </div>
+          )}
 
-          <SegmentedControl
+          <FurnitureCards
             label="Table"
             value={config.furniture.table}
             options={tableOptions}
@@ -299,6 +457,14 @@ export default function ConfigPanel({
               onChange={(value) => onFurnitureChange('skirt', value)}
             />
           )}
+
+          <SegmentedControl
+            label="Trash Can"
+            value={config.furniture.trashCan}
+            options={trashCanOptions}
+            columnsClass="grid-cols-2"
+            onChange={(value) => onFurnitureChange('trashCan', value)}
+          />
         </CollapsibleSection>
 
         {drapeGroups.map((group) => (

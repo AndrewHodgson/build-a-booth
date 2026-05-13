@@ -1,3 +1,4 @@
+import { useProgress } from '@react-three/drei'
 import { useState } from 'react'
 import BoothScene from './components/BoothScene.jsx'
 import ConfigPanel from './components/ConfigPanel.jsx'
@@ -36,15 +37,45 @@ function applyPattern(layout) {
   return drapePatterns[layout.pattern]?.(layout) ?? null
 }
 
+function LoadingOverlay() {
+  const { active, progress } = useProgress()
+  const isVisible = active || progress < 100
+  const roundedProgress = Math.round(progress)
+
+  if (!isVisible) {
+    return null
+  }
+
+  return (
+    <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-white/70 backdrop-blur-sm">
+      <div className="w-56">
+        <div className="h-1.5 overflow-hidden rounded-full bg-neutral-200">
+          <div
+            className="h-full rounded-full transition-[width]"
+            style={{
+              width: `${roundedProgress}%`,
+              backgroundColor: '#214670',
+            }}
+          />
+        </div>
+        <p className="mt-3 text-center text-xs font-medium text-neutral-600">
+          Loading {roundedProgress}%
+        </p>
+      </div>
+    </div>
+  )
+}
+
 const initialConfig = {
   carpet: 'silver-dollar',
   drapes: createDefaultDrapes(),
   drapeLayouts: createDefaultDrapeLayouts(),
   furniture: {
     trashCan: 'visible',
-    chairs: '2',
+    seating: 'plastic-folding-chair',
     table: '6ft-30in',
     skirt: 'black',
+    barstoolColor: 'black',
   },
 }
 
@@ -121,6 +152,8 @@ export default function App() {
       <section className="absolute inset-0" aria-label="3D booth preview">
         <BoothScene config={config} />
       </section>
+
+      <LoadingOverlay />
 
       <div className="pointer-events-none absolute bottom-4 left-4 z-10 rounded-md bg-white/70 px-3 py-2 text-xs leading-5 text-neutral-600 shadow-sm backdrop-blur">
         <p>Left click + drag: orbit / rotate</p>

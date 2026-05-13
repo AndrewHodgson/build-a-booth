@@ -1,6 +1,6 @@
 import { Center, Environment, OrbitControls, useGLTF, useTexture } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
-import { useEffect, useMemo } from 'react'
+import { Suspense, useEffect, useMemo } from 'react'
 import { ClampToEdgeWrapping, RepeatWrapping, SRGBColorSpace } from 'three'
 import { carpetTextureOptions, carpetTexturePreloadPaths } from '../data/carpetOptions.js'
 import {
@@ -15,11 +15,56 @@ const MODEL_PATH = '/models/booth.glb'
 const HDRI_PATH = '/hdri/paul_lobe_haus_4k.hdr'
 const SHOW_GRID = true
 const DRAPE_REPEAT = [4, 4]
+const DEFAULT_BARSTOOL_COLOR = 'black'
+
+const barstoolTextureOptions = [
+  {
+    value: 'black',
+    label: 'Black',
+    lagerTexturePath: '/textures/barstools/Lager_Barstool_Black.png',
+    aleTexturePath: '/textures/barstools/Ale_Barstool_Black.png',
+  },
+  {
+    value: 'white',
+    label: 'White',
+    lagerTexturePath: '/textures/barstools/Lager_Barstool_White.png',
+    aleTexturePath: '/textures/barstools/Ale_Barstool_White.png',
+  },
+]
+
+const barstoolTexturePreloadPaths = barstoolTextureOptions.flatMap((option) => [
+  option.lagerTexturePath,
+  option.aleTexturePath,
+])
+
+const seatingObjectGroups = {
+  'plastic-side-chair': ['plastic_side_chair_left', 'plastic_side_chair_right'],
+  'plastic-folding-chair': ['plastic_folding_chair_left', 'plastic_folding_chair_right'],
+  'padded-side-chair': ['padded_side_chair_left', 'padded_side_chair_right'],
+  'lager-barstool': [
+    'lager_barstool_left_bottom',
+    'lager_barstool_left_top',
+    'lager_barstool_right_bottom',
+    'lager_barstool_right_top',
+  ],
+  'ale-barstool': [
+    'ale_bar_stool_left_top',
+    'ale_bar_stool_left_bottom',
+    'ale_bar_stool_right_bottom',
+    'ale_bar_stool_right_top',
+  ],
+}
+
+const tableObjectGroups = {
+  '6ft-30in': ['skirt_30in', 'tabletop_30in'],
+  '6ft-42in': ['skirt_42in', 'tabletop_42in'],
+}
 
 const texturePreloadPaths = [
   ...drapeTexturePreloadPaths,
   ...carpetTexturePreloadPaths,
   ...skirtTexturePreloadPaths,
+  ...barstoolTexturePreloadPaths,
 ]
 
 function SceneLights() {
@@ -110,8 +155,13 @@ function BoothModel({ config }) {
   const drapeOptionsByValue = useMemo(() => createOptionMap(drapeTextureOptions), [])
   const carpetOptionsByValue = useMemo(() => createOptionMap(carpetTextureOptions), [])
   const skirtOptionsByValue = useMemo(() => createOptionMap(skirtTextureOptions), [])
+  const barstoolOptionsByValue = useMemo(() => createOptionMap(barstoolTextureOptions), [])
 
   useEffect(() => {
+    const selectedBarstoolOption =
+      barstoolOptionsByValue.get(config.furniture.barstoolColor) ??
+      barstoolOptionsByValue.get(DEFAULT_BARSTOOL_COLOR)
+
     const drapeMaterialSelections = drapeGroups.flatMap(({ side }) =>
       drapePanelNumbers.map((panelNumber, panelIndex) => ({
         materialName: `MAT_drape_${side}_${panelNumber}`,
@@ -127,18 +177,27 @@ function BoothModel({ config }) {
         option: carpetOptionsByValue.get(config.carpet),
         shouldRepeat: false,
       },
-    ]
-
-    if (config.furniture.table !== 'none') {
-      materialSelections.push({
-        materialName:
-          config.furniture.table === '6ft-30in'
-            ? 'MAT_6ft_30in_skirted_Table'
-            : 'MAT_6ft_42in_skirted_Table',
+      {
+        materialName: 'MAT_6ft_30in_skirted_Table',
         option: skirtOptionsByValue.get(config.furniture.skirt),
         shouldRepeat: true,
-      })
-    }
+      },
+      {
+        materialName: 'MAT_6ft_42in_skirted_Table',
+        option: skirtOptionsByValue.get(config.furniture.skirt),
+        shouldRepeat: true,
+      },
+      {
+        materialName: 'MATT_Lager_Barstool',
+        option: { texturePath: selectedBarstoolOption?.lagerTexturePath },
+        shouldRepeat: false,
+      },
+      {
+        materialName: 'MATT_Ale_barstool',
+        option: { texturePath: selectedBarstoolOption?.aleTexturePath },
+        shouldRepeat: false,
+      },
+    ]
 
     materialSelections.forEach(({ materialName, option, isDrapeTexture, shouldRepeat }) => {
       const texture = option?.texturePath ? textureByPath.get(option.texturePath) : null
@@ -152,6 +211,7 @@ function BoothModel({ config }) {
 
     tuneGalvanizedMaterial(materials)
   }, [
+    barstoolOptionsByValue,
     carpetOptionsByValue,
     config,
     drapeOptionsByValue,
@@ -162,18 +222,14 @@ function BoothModel({ config }) {
 
   useEffect(() => {
     setObjectVisibility(scene, 'trash_can', config.furniture.trashCan === 'visible')
-    setObjectVisibility(scene, 'chair_1', config.furniture.chairs === '1' || config.furniture.chairs === '2')
-    setObjectVisibility(scene, 'chair_2', config.furniture.chairs === '2')
-    setObjectsVisibility(
-      scene,
-      ['table_6ft_30in', 'skirt_30in', 'tabletop_30in'],
-      config.furniture.table === '6ft-30in',
-    )
-    setObjectsVisibility(
-      scene,
-      ['table_6ft_42in', 'skirt_42in', 'tabletop_42in'],
-      config.furniture.table === '6ft-42in',
-    )
+
+    Object.entries(seatingObjectGroups).forEach(([seating, objectNames]) => {
+      setObjectsVisibility(scene, objectNames, config.furniture.seating === seating)
+    })
+
+    Object.entries(tableObjectGroups).forEach(([table, objectNames]) => {
+      setObjectsVisibility(scene, objectNames, config.furniture.table === table)
+    })
   }, [config.furniture, scene])
 
   return (
@@ -191,8 +247,10 @@ export default function BoothScene({ config }) {
       onCreated={({ gl }) => gl.setClearAlpha(0)}
     >
       <SceneLights />
-      <Environment files={HDRI_PATH} environmentIntensity={1.15} />
-      <BoothModel config={config} />
+      <Suspense fallback={null}>
+        <Environment files={HDRI_PATH} environmentIntensity={1.15} />
+        <BoothModel config={config} />
+      </Suspense>
       {SHOW_GRID && <PlaceholderGround />}
       <OrbitControls
         makeDefault
