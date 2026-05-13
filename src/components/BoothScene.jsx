@@ -38,21 +38,26 @@ const barstoolTexturePreloadPaths = barstoolTextureOptions.flatMap((option) => [
 ])
 
 const seatingObjectGroups = {
-  'plastic-side-chair': ['plastic_side_chair_left', 'plastic_side_chair_right'],
-  'plastic-folding-chair': ['plastic_folding_chair_left', 'plastic_folding_chair_right'],
-  'padded-side-chair': ['padded_side_chair_left', 'padded_side_chair_right'],
-  'lager-barstool': [
-    'lager_barstool_left_bottom',
-    'lager_barstool_left_top',
-    'lager_barstool_right_bottom',
-    'lager_barstool_right_top',
-  ],
-  'ale-barstool': [
-    'ale_bar_stool_left_top',
-    'ale_bar_stool_left_bottom',
-    'ale_bar_stool_right_bottom',
-    'ale_bar_stool_right_top',
-  ],
+  'plastic-side-chair': {
+    left: ['plastic_side_chair_left'],
+    right: ['plastic_side_chair_right'],
+  },
+  'plastic-folding-chair': {
+    left: ['plastic_folding_chair_left'],
+    right: ['plastic_folding_chair_right'],
+  },
+  'padded-side-chair': {
+    left: ['padded_side_chair_left'],
+    right: ['padded_side_chair_right'],
+  },
+  'lager-barstool': {
+    left: ['lager_barstool_left_bottom', 'lager_barstool_left_top'],
+    right: ['lager_barstool_right_bottom', 'lager_barstool_right_top'],
+  },
+  'ale-barstool': {
+    left: ['ale_bar_stool_left_top', 'ale_bar_stool_left_bottom'],
+    right: ['ale_bar_stool_right_bottom', 'ale_bar_stool_right_top'],
+  },
 }
 
 const tableObjectGroups = {
@@ -223,8 +228,16 @@ function BoothModel({ config }) {
   useEffect(() => {
     setObjectVisibility(scene, 'trash_can', config.furniture.trashCan === 'visible')
 
-    Object.entries(seatingObjectGroups).forEach(([seating, objectNames]) => {
-      setObjectsVisibility(scene, objectNames, config.furniture.seating === seating)
+    Object.entries(seatingObjectGroups).forEach(([seating, objectGroups]) => {
+      const isSelected = config.furniture.seating === seating
+      const seatingQuantity = config.furniture.seatingQuantity ?? '2'
+
+      setObjectsVisibility(scene, objectGroups.left, isSelected)
+      setObjectsVisibility(
+        scene,
+        objectGroups.right,
+        isSelected && seatingQuantity === '2',
+      )
     })
 
     Object.entries(tableObjectGroups).forEach(([table, objectNames]) => {

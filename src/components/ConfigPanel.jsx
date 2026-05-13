@@ -23,29 +23,34 @@ const seatingOptions = [
   { value: 'none', label: 'No Seating' },
   {
     value: 'plastic-side-chair',
-    label: 'Plastic Side Chair Pair',
+    label: 'Plastic Side Chair',
     thumbnailPath: '/furniture/plastic_side_chair_thumbnail.jpg',
   },
   {
     value: 'plastic-folding-chair',
-    label: 'Plastic Folding Chair Pair',
+    label: 'Plastic Folding Chair',
     thumbnailPath: '/furniture/plastic_folding_chair_thumbnail.jpg',
   },
   {
     value: 'padded-side-chair',
-    label: 'Padded Side Chair Pair',
+    label: 'Padded Side Chair',
     thumbnailPath: '/furniture/padded_barstool_thumbnail.jpg',
   },
   {
     value: 'lager-barstool',
-    label: 'Lager Barstool Pair',
+    label: 'Lager Barstool',
     thumbnailPath: '/furniture/lager_barstool_thumbnail.jpg',
   },
   {
     value: 'ale-barstool',
-    label: 'Ale Barstool Pair',
+    label: 'Ale Barstool',
     thumbnailPath: '/furniture/ale_barstool_thumbnail.jpg',
   },
+]
+
+const seatingQuantityOptions = [
+  { value: '1', label: '1 Chair' },
+  { value: '2', label: '2 Chairs' },
 ]
 
 const tableOptions = [
@@ -75,10 +80,20 @@ const barstoolTextureOptions = [
   },
 ]
 
-function SegmentedControl({ label, value, options, onChange, rowCount, columnsClass = '' }) {
+function SegmentedControl({
+  label,
+  value,
+  options,
+  onChange,
+  rowCount,
+  columnsClass = '',
+  isCategoryLabel = true,
+}) {
   return (
     <div className="grid gap-2">
-      <p className="text-sm font-bold text-neutral-700">{label}</p>
+      <p className={`text-sm text-neutral-700 ${isCategoryLabel ? 'font-bold' : 'font-medium'}`}>
+        {label}
+      </p>
       <div className={`grid gap-2 ${columnsClass}`}>
         {Array.from({ length: rowCount ?? options.length }).map((_, index) => {
           const option = options[index]
@@ -363,6 +378,7 @@ export default function ConfigPanel({
   onDrapeLayoutChange,
   onFurnitureChange,
 }) {
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false)
   const [openSections, setOpenSections] = useState({
     carpet: false,
     furniture: false,
@@ -383,14 +399,38 @@ export default function ConfigPanel({
   }
 
   return (
-    <aside className="absolute inset-x-3 bottom-3 z-10 max-h-[calc(100vh-1.5rem)] overflow-y-auto rounded-lg border border-white/70 bg-white/[0.92] p-3 shadow-xl shadow-neutral-900/10 backdrop-blur md:inset-x-auto md:bottom-auto md:right-4 md:top-4 md:w-80">
-      <div className="mb-4 text-center">
+    <>
+      {!isMobileDrawerOpen && (
+        <button
+          type="button"
+          className="absolute bottom-4 right-4 z-10 cursor-pointer rounded-md bg-[#214670] px-4 py-3 text-sm font-semibold text-white shadow-lg md:hidden"
+          onClick={() => setIsMobileDrawerOpen(true)}
+        >
+          Customize Booth
+        </button>
+      )}
+
+      <aside
+        className={`absolute inset-x-0 bottom-0 z-10 max-h-[78vh] overflow-y-auto rounded-t-lg border border-white/70 bg-white/[0.94] p-3 shadow-xl shadow-neutral-900/10 backdrop-blur md:inset-x-auto md:bottom-auto md:right-4 md:top-4 md:block md:max-h-[calc(100vh-2rem)] md:w-80 md:rounded-lg md:p-[17px] ${
+          isMobileDrawerOpen ? 'block' : 'hidden'
+        }`}
+      >
+      <div className="mb-4 flex items-start justify-between gap-3 text-center">
+        <div className="min-w-0 flex-1">
         <img
           src="/images/SourceOne-Logo-RGB.svg"
           alt="SourceOne Events"
           className="mx-auto mb-3 h-9 w-auto"
         />
         <h1 className="text-base font-semibold text-neutral-950">Booth Configurator</h1>
+        </div>
+        <button
+          type="button"
+          className="cursor-pointer rounded-md border border-neutral-200 px-3 py-1.5 text-sm font-semibold text-neutral-700 md:hidden"
+          onClick={() => setIsMobileDrawerOpen(false)}
+        >
+          Close
+        </button>
       </div>
 
       <div className="grid gap-3">
@@ -431,6 +471,17 @@ export default function ConfigPanel({
             options={seatingOptions}
             onChange={(value) => onFurnitureChange('seating', value)}
           />
+
+          {config.furniture.seating !== 'none' && (
+            <SegmentedControl
+              label="Quantity"
+              value={config.furniture.seatingQuantity}
+              options={seatingQuantityOptions}
+              columnsClass="grid-cols-2"
+              isCategoryLabel={false}
+              onChange={(value) => onFurnitureChange('seatingQuantity', value)}
+            />
+          )}
 
           {(config.furniture.seating === 'lager-barstool' ||
             config.furniture.seating === 'ale-barstool') && (
@@ -480,5 +531,6 @@ export default function ConfigPanel({
         ))}
       </div>
     </aside>
+    </>
   )
 }

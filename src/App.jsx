@@ -73,6 +73,7 @@ const initialConfig = {
   furniture: {
     trashCan: 'visible',
     seating: 'plastic-folding-chair',
+    seatingQuantity: '2',
     table: '6ft-30in',
     skirt: 'black',
     barstoolColor: 'black',
