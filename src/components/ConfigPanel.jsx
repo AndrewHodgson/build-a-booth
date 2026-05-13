@@ -422,14 +422,14 @@ export default function ConfigPanel({
           isMobileDrawerOpen ? 'block' : 'hidden'
         }`}
       >
-      <div className="mb-4 flex items-start justify-between gap-3 text-center">
+      <div className="mb-4 flex items-start justify-between gap-3 pl-2 text-left md:pl-0 md:text-center">
         <div className="min-w-0 flex-1">
         <img
           src="/images/SourceOne-Logo-RGB.svg"
           alt="SourceOne Events"
-          className="mx-auto mb-3 hidden h-9 w-auto md:block"
+          className="mb-3 hidden h-9 w-auto md:mx-auto md:block"
         />
-        <h1 className="text-base font-semibold text-neutral-950">Booth Configurator</h1>
+        <h1 className="text-xl font-semibold text-neutral-950 md:text-base">Booth Configurator</h1>
         </div>
         <button
           type="button"
@@ -537,6 +537,10 @@ export default function ConfigPanel({
           />
         ))}
       </div>
+
+      <footer className="mt-5 border-t border-neutral-200 pt-3 text-[11px] text-neutral-500">
+        © 2026 SourceOne Events. All rights reserved.
+      </footer>
     </aside>
     </>
   )
