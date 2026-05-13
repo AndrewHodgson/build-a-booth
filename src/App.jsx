@@ -156,7 +156,7 @@ export default function App() {
 
       <LoadingOverlay />
 
-      <div className="pointer-events-none absolute bottom-4 left-4 z-10 rounded-md bg-white/70 px-3 py-2 text-xs leading-5 text-neutral-600 shadow-sm backdrop-blur">
+      <div className="pointer-events-none absolute bottom-4 left-4 z-10 hidden rounded-md bg-white/70 px-3 py-2 text-xs leading-5 text-neutral-600 shadow-sm backdrop-blur md:block">
         <p>Left click + drag: orbit / rotate</p>
         <p>Scroll wheel: zoom in / out</p>
       </div>

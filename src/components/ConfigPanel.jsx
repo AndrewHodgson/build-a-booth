@@ -403,7 +403,7 @@ export default function ConfigPanel({
       {!isMobileDrawerOpen && (
         <button
           type="button"
-          className="absolute bottom-4 right-4 z-10 cursor-pointer rounded-md bg-[#214670] px-4 py-3 text-sm font-semibold text-white shadow-lg md:hidden"
+          className="absolute right-4 top-4 z-30 cursor-pointer rounded-md bg-[#214670] px-4 py-3 text-sm font-semibold text-white shadow-lg md:hidden"
           onClick={() => setIsMobileDrawerOpen(true)}
         >
           Customize Booth
