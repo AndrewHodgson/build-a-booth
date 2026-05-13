@@ -401,13 +401,20 @@ export default function ConfigPanel({
   return (
     <>
       {!isMobileDrawerOpen && (
-        <button
-          type="button"
-          className="absolute right-4 top-[calc(env(safe-area-inset-top)+1rem)] z-50 min-h-11 cursor-pointer rounded-md bg-[#214670] px-4 py-3 text-sm font-semibold text-white shadow-lg md:hidden"
-          onClick={() => setIsMobileDrawerOpen(true)}
-        >
-          Customize Booth
-        </button>
+        <div className="absolute right-4 top-[calc(env(safe-area-inset-top)+1rem)] z-50 flex items-center gap-3 md:hidden">
+          <img
+            src="/images/SourceOne-Logo-RGB.svg"
+            alt="SourceOne Events"
+            className="h-9 w-auto drop-shadow-sm"
+          />
+          <button
+            type="button"
+            className="min-h-11 cursor-pointer rounded-md bg-[#214670] px-4 py-3 text-sm font-semibold text-white shadow-lg"
+            onClick={() => setIsMobileDrawerOpen(true)}
+          >
+            Customize Booth
+          </button>
+        </div>
       )}
 
       <aside
@@ -420,7 +427,7 @@ export default function ConfigPanel({
         <img
           src="/images/SourceOne-Logo-RGB.svg"
           alt="SourceOne Events"
-          className="mx-auto mb-3 h-9 w-auto"
+          className="mx-auto mb-3 hidden h-9 w-auto md:block"
         />
         <h1 className="text-base font-semibold text-neutral-950">Booth Configurator</h1>
         </div>
