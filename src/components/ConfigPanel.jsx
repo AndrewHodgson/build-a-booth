@@ -20,16 +20,15 @@ const trashCanOptions = [
 ]
 
 const seatingOptions = [
-  { value: 'none', label: 'No Seating' },
-  {
-    value: 'plastic-side-chair',
-    label: 'Plastic Side Chair',
-    thumbnailPath: '/furniture/plastic_side_chair_thumbnail.jpg',
-  },
   {
     value: 'plastic-folding-chair',
     label: 'Plastic Folding Chair',
     thumbnailPath: '/furniture/plastic_folding_chair_thumbnail.jpg',
+  },
+  {
+    value: 'plastic-side-chair',
+    label: 'Plastic Side Chair',
+    thumbnailPath: '/furniture/plastic_side_chair_thumbnail.jpg',
   },
   {
     value: 'padded-side-chair',
@@ -46,6 +45,7 @@ const seatingOptions = [
     label: 'Ale Barstool',
     thumbnailPath: '/furniture/ale_barstool_thumbnail.jpg',
   },
+  { value: 'none', label: 'No Seating' },
 ]
 
 const seatingQuantityOptions = [
@@ -54,7 +54,6 @@ const seatingQuantityOptions = [
 ]
 
 const tableOptions = [
-  { value: 'none', label: 'No Table' },
   {
     value: '6ft-30in',
     label: '6ft 30in Skirted Table',
@@ -65,6 +64,7 @@ const tableOptions = [
     label: '6ft 42in Skirted Table',
     thumbnailPath: '/furniture/6ft_42in_skirted_table_thumbnail.jpg',
   },
+  { value: 'none', label: 'No Table' },
 ]
 
 const barstoolTextureOptions = [
@@ -94,7 +94,7 @@ function SegmentedControl({
       <p className={`text-sm text-neutral-700 ${isCategoryLabel ? 'font-bold' : 'font-medium'}`}>
         {label}
       </p>
-      <div className={`grid gap-2 ${columnsClass}`}>
+      <div className={`grid px-1 py-1 gap-2 ${columnsClass}`}>
         {Array.from({ length: rowCount ?? options.length }).map((_, index) => {
           const option = options[index]
 
@@ -128,7 +128,7 @@ function FurnitureCards({ label, value, options, onChange }) {
   return (
     <div className="grid gap-2">
       <p className="text-sm font-bold text-neutral-700">{label}</p>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2 px-1 py-1">
         {options.map((option) => {
           const isSelected = value === option.value
 
@@ -171,7 +171,7 @@ function ColorSwatches({ label, value, options, onChange }) {
   return (
     <div className="grid gap-2">
       <p className="text-sm font-medium text-neutral-700">{label}</p>
-      <div className="flex gap-2">
+      <div className="flex gap-2 px-1 py-1">
         {options.map((option) => {
           const isSelected = value === option.value
 
@@ -259,7 +259,7 @@ function PatternButtons({ value, onChange }) {
   return (
     <div className="grid gap-2">
       <p className="text-sm font-medium text-neutral-700">Drape layout pattern</p>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2 px-1 py-1">
         {layoutPatterns.map((pattern) => {
           const isSelected = value === pattern.value
 
@@ -290,7 +290,7 @@ function TextureSwatches({ label, value, options, onChange, showLabel = true }) 
   return (
     <div className="grid gap-2">
       {showLabel && <p className="text-sm font-medium text-neutral-700">{label}</p>}
-      <div className="grid grid-cols-8 gap-2">
+      <div className="grid grid-cols-8 gap-2 px-1 py-1">
         {options.map((option) => {
           const isSelected = value === option.value
 
